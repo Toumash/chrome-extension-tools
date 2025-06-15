@@ -14,8 +14,18 @@ export default defineManifest({
     },
     default_popup: 'src/popup/index.html',
   },
-  content_scripts: [{
-    js: ['src/content/main.ts'],
-    matches: ['https://*/*'],
-  }],
+  content_scripts: [
+    {
+      js: ['src/content/main.ts'],
+      matches: ['https://*/*'],
+    },
+  ],
+    "permissions": ["favicon"],
+  web_accessible_resources: [
+    {
+      resources: ['_favicon/*'],
+      matches: ['<all_urls>'],
+      use_dynamic_url: true,
+    },
+  ],
 })
