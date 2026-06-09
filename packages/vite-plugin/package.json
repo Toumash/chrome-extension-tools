@@ -126,6 +126,7 @@
     "jest-image-snapshot": "^5.2.0",
     "npm-run-all": "^4.1.5",
     "playwright-chromium": "1.52.0",
+    "posthog-js": "1.383.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "rimraf": "3.0.2",

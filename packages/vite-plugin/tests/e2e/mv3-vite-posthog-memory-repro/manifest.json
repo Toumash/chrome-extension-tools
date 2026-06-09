@@ -1,0 +1,12 @@
+{
+  "description": "PostHog memory repro extension",
+  "manifest_version": 3,
+  "name": "PostHog memory repro",
+  "content_scripts": [
+    {
+      "matches": ["https://example.com/*"],
+      "js": ["entry/content.ts"]
+    }
+  ],
+  "version": "1.0.0"
+}
