@@ -1,4 +1,5 @@
 import './style.css'
+import './wildcard-full-reload.css'
 import { header } from './header'
 
 const app = document.createElement('div')

@@ -1,10 +1,40 @@
 import fs from 'fs-extra'
 import path from 'pathe'
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, timeout } from 'rxjs'
 import { expect, test } from 'vitest'
 import { createUpdate, getPage, waitForInnerHtml } from '../helpers'
 import { serve } from '../runners'
 import { header } from './src2/header'
+
+test('forwards Vite wildcard full reloads to content scripts', async () => {
+  const src = path.join(__dirname, 'src')
+  const src1 = path.join(__dirname, 'src1')
+  const src3 = path.join(__dirname, 'src3')
+
+  await fs.remove(src)
+  await fs.copy(src1, src, { recursive: true })
+
+  const { browser, routes } = await serve(__dirname)
+
+  const page = await browser.newPage()
+  const update = createUpdate({ target: src, src: src3 })
+  const app = page.locator('#app')
+
+  await page.goto('https://example.com')
+  await app.waitFor()
+
+  let reloads = 0
+  routes.subscribe(() => {
+    reloads++
+  })
+
+  const reload = firstValueFrom(routes.pipe(timeout({ first: 5000 })))
+  await update('wildcard-full-reload.css')
+  await reload
+
+  expect(reloads).toBeGreaterThanOrEqual(1)
+  await app.waitFor({ timeout: 15_000 })
+})
 
 // TODO: Playwright stalls consistently in CI for this one test, why?
 test.skipIf(process.env.CI)('crx page update on hmr', async () => {
