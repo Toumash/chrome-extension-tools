@@ -1,7 +1,7 @@
 import { watch } from 'chokidar'
 import fs from 'fs-extra'
 import { join } from 'pathe'
-import { RollupOutput } from 'rollup'
+import { RollupOutput, RollupWatcher } from 'rollup'
 import {
   delay,
   firstValueFrom,
@@ -27,7 +27,7 @@ import { afterEach, expect } from 'vitest'
 export interface BuildTestResult {
   command: 'build'
   config: ResolvedConfig
-  output: RollupOutput
+  output: RollupOutput | RollupWatcher
   outDir: string
   rootDir: string
 }
@@ -107,7 +107,8 @@ export async function build(
 
   if (Array.isArray(output))
     throw new TypeError('received outputarray from vite build')
-  if ('close' in output) throw new TypeError('received watcher from vite build')
+  // need watcher
+  // if ('close' in output) throw new TypeError('received watcher from vite build')
 
   return { command: 'build', outDir, output, config: config!, rootDir: dirname }
 }
@@ -141,6 +142,9 @@ export async function serve(dirname: string): Promise<ServeTestResult> {
     server: {
       port: 5200,
       hmr: true,
+      cors: {
+        origin: [/chrome-extension:\/\//, /moz-extension:\/\//],
+      },
       watch: {
         // cache dir should not trigger update in these tests
         ignored: [cacheDir],
@@ -160,7 +164,7 @@ export async function serve(dirname: string): Promise<ServeTestResult> {
   await allFilesReady()
   debug('bundle end')
 
-  const outDirSettle$ = fromEvent(watch(outDir), 'all').pipe(
+  const outDirSettle$ = fromEvent(watch(outDir) as unknown as NodeJS.EventEmitter, 'all').pipe(
     startWith(null),
     map((x, i) => i),
     // debounce relies on the Date object
