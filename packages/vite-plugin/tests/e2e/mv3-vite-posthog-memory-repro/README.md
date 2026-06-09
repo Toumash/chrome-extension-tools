@@ -6,6 +6,8 @@ This fixture exercises CRXJS serve-mode file writing with the same PostHog entry
 posthog-js/dist/module.full.no-external
 ```
 
+Related fix PR: [crxjs/chrome-extension-tools#1188](https://github.com/crxjs/chrome-extension-tools/pull/1188).
+
 It is skipped by default so the normal e2e suite does not run a memory stress test. On the unfixed baseline, this fixture can reproduce high memory usage or OOM. On the fixed branch, the same commands should pass with lower RSS/heap usage.
 
 Run the constrained-heap regression check:
