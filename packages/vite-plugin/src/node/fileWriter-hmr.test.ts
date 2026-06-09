@@ -18,6 +18,18 @@ test('forwards path-scoped full reloads to content scripts', () => {
   expect(shouldForwardCrxPayload(payload)).toBe(true)
 })
 
+test('forwards Vite wildcard full reloads to content scripts', () => {
+  const payload = mapVitePayloadForCrx({
+    type: 'full-reload',
+    path: '*',
+  })
+
+  expect(payload).toMatchObject({
+    type: 'full-reload',
+  })
+  expect(shouldForwardCrxPayload(payload)).toBe(true)
+})
+
 test('does not forward empty content script updates', () => {
   expect(
     shouldForwardCrxPayload({
