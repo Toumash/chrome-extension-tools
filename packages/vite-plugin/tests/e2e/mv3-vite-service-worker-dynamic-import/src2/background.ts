@@ -1,4 +1,4 @@
-import './seed-data'
+import './foo'
 import './static-data'
 
 chrome.runtime.onMessage.addListener(() => undefined)

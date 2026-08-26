@@ -6,5 +6,11 @@
     "service_worker": "src/background.ts",
     "type": "module"
   },
+  "content_scripts": [
+    {
+      "js": ["src/content-script.ts"],
+      "matches": ["https://example.com/*"]
+    }
+  ],
   "version": "1.0.0"
 }

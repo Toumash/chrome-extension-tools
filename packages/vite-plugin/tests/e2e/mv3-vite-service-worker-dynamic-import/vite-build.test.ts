@@ -10,7 +10,7 @@ interface WorkerState {
   importCaught?: boolean
   listeners: boolean
   nestedValue?: string
-  staticVoices?: string[]
+  staticSeed?: string
   voices?: string[]
 }
 
@@ -36,7 +36,7 @@ async function buildFixture(source: string) {
       const fixtureGlobal = globalThis as typeof globalThis & {
         __importCaught?: boolean
         __nestedValue?: string
-        __staticVoices?: string[]
+        __staticSeed?: string
         __voices?: string[]
       }
 
@@ -44,7 +44,7 @@ async function buildFixture(source: string) {
         importCaught: fixtureGlobal.__importCaught,
         listeners: chrome.runtime.onMessage.hasListeners(),
         nestedValue: fixtureGlobal.__nestedValue,
-        staticVoices: fixtureGlobal.__staticVoices,
+        staticSeed: fixtureGlobal.__staticSeed,
         voices: fixtureGlobal.__voices,
       }
     })
@@ -61,12 +61,12 @@ async function buildFixture(source: string) {
 
 const viteMajor = Number.parseInt(version.split('.')[0], 10)
 
-// TODO(#1235): use `test` unconditionally after restoring Vite 7's behavior
-// for statically reachable dynamic imports in Vite 8.
+// TODO(#1235): use `test` unconditionally after preventing Vite's preload
+// helper from aborting service workers when dynamic data is shared by entries.
 const testVite8Regression = viteMajor >= 8 ? test.fails : test
 
 testVite8Regression(
-  'inlines a statically reachable service worker dynamic import',
+  'keeps listeners when dynamic data is shared with a content script',
   async ({ expect }) => {
     expect(await buildFixture('src2')).toEqual({
       output: {
@@ -77,8 +77,8 @@ testVite8Regression(
         importCaught: undefined,
         listeners: true,
         nestedValue: undefined,
-        staticVoices: ['fixture-Alice', 'fixture-Bob'],
-        voices: ['fixture-Alice', 'fixture-Bob'],
+        staticSeed: 'statically-seeded',
+        voices: ['Alice', 'Bob'],
       },
     })
   },
@@ -98,7 +98,7 @@ test.fails(
         importCaught: undefined,
         listeners: true,
         nestedValue: 'fixture-nested-import-ran',
-        staticVoices: undefined,
+        staticSeed: undefined,
         voices: ['fixture-Alice', 'fixture-Bob'],
       },
     })

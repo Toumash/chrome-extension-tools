@@ -1,4 +1,4 @@
-import('./voices')
+import('./data')
   .then(({ voices }) => {
     ;(globalThis as typeof globalThis & { __voices?: string[] }).__voices =
       voices
